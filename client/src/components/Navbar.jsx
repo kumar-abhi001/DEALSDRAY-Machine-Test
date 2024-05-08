@@ -16,7 +16,9 @@ export const Navbar = ({ name = "Abhishek" }) => {
                     <Link to="/admin/dashboard/emplist" className="ml-5">Employee List</Link>
                     <Link to="/admin/dashboard/addemployee" className="ml-5">Add Employee</Link>
             <span className="ml-5">{name}-</span>
-            <a href="/" className="ml-1">Logout</a>
+            <a href="/" className="ml-1" onClick={() => {
+              window.localStorage.removeItem("token");
+            }}>Logout</a>
           </div>
         </div>
         <Outlet />

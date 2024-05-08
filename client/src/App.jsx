@@ -5,6 +5,8 @@ import { AdminPanel } from './pages/AdminPanel'
 import { Navbar } from './components/Navbar'
 import { EmployeeList } from './components/EmployeeList'
 import { AddEmployee } from './components/AddEmployee'
+
+
 function App() {
   return (
     <>
@@ -15,6 +17,7 @@ function App() {
             <Route path="" element={<AdminPanel />} />
             <Route path="emplist" element={<EmployeeList />} />
             <Route path="addemployee" element={<AddEmployee />} />
+            <Route path="editemployee" element={<AddEmployee />} />
           </Route>
         </Routes>
       </Router>

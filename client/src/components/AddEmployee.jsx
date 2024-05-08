@@ -1,37 +1,76 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./Input";
+import { serverUrl } from "../../constants";
+import { useLocation } from "react-router-dom";
 
 export const AddEmployee = () => {
+  const location = useLocation();
+  const empId = location.state?.id;
+  console.log("Locatin", location.state?.id);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
   const [designation, setDesignation] = useState("");
   const [gender, setGender] = useState("");
   const [courses, setCourses] = useState([]);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState();
+
+  if (empId) {
+    useEffect(() => { 
+      fetch(`${serverUrl}/employee/${empId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const employee = data.data;
+          setName(employee.name);
+          setEmail(employee.email);
+          setPhone(employee.phone);
+          setDesignation(employee.designation);
+          setImage(employee.picture);
+          setCourses(employee.course);
+          setGender(employee.gender);
+        });
+    }, []);
+  }
 
   async function handleForm(e) {
     e.preventDefault();
-      const formData = {
-          "name": name,
-          "email": email,
-          "phone": phone,
-          "address": address,
-          "designation": designation,
-            "gender": gender,
-          "courses": courses,
-            "image": image
-    };
-    console.log(formData);
-    const res = await fetch("http://localhost:8000/api/employee", {
-      method: "POST",
-      body: formData,
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("phone", phone);
+    formData.append("designation", designation);
+    formData.append("image", image);
+    formData.append("gender", gender);
+    courses.forEach((course) => {
+      formData.append("course", course);
     });
-      
-      const data = await res.json();
-      alert(data.message);
-    console.log(data);
+
+    console.log(formData.get("course"));
+    const token = window.localStorage.getItem("token");
+    fetch(`${serverUrl}/add/employee`, {
+      method: "POST",
+      body: formData, // Pass formData directly as the body
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === 403) {
+          window.localStorage.removeItem("token");
+          console.log(data.message);
+          window.location.href = "/";
+
+        }
+        alert(data.message);
+      })
+      .catch((error) => {
+        console.log("Error in adding employee", error);
+      });
   }
 
   return (
@@ -62,13 +101,6 @@ export const AddEmployee = () => {
           label="Phone No"
           onChange={(e) => setPhone(e.target.value)}
         />
-        <Input
-          type="text"
-          placeholder="Address"
-          value={address}
-          label="Address"
-          onChange={(e) => setAddress(e.target.value)}
-        />
         <div className="flex flex-col">
           <label className="font-[500]">Designation</label>
           <select
@@ -89,14 +121,14 @@ export const AddEmployee = () => {
           <div className="flex">
             <input
               type="radio"
-              value="Male"
+              value={gender}
               name="gender"
               onChange={(e) => setGender(e.target.value)}
             />{" "}
             <label className="ml-2 mr-4">Male</label>
             <input
               type="radio"
-              value="Female"
+              value={gender}
               name="gender"
               onChange={(e) => setGender(e.target.value)}
             />{" "}

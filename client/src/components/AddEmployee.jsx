@@ -121,14 +121,14 @@ export const AddEmployee = () => {
           <div className="flex">
             <input
               type="radio"
-              value={gender}
+              value="Male"
               name="gender"
               onChange={(e) => setGender(e.target.value)}
             />{" "}
             <label className="ml-2 mr-4">Male</label>
             <input
               type="radio"
-              value={gender}
+              value="Female"
               name="gender"
               onChange={(e) => setGender(e.target.value)}
             />{" "}

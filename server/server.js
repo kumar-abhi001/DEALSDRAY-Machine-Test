@@ -58,6 +58,7 @@ app.use(verifyJWT);
 //add employee
 app.post("/add/employee", upload.single("image"),  async (req, res) => {
   const { name, email, phone, designation, gender, course } = req.body;
+  console.log(req.body);
 
   if (!name || !email || !phone || !designation || !gender || !course) { 
     return res.status(400).json({ message: "Please fill all the fields", success: false, data: {} });

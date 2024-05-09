@@ -22,8 +22,8 @@ export const EmployeeList = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-          setEmployees(data.data);
-          console.log(data.data);
+        setEmployees(data.data);
+        console.log(data.data);
         setTotalPages(Math.ceil(data.data.length / pageSize));
       })
       .catch((error) => console.log("Error in fetching employees", error));
@@ -37,24 +37,25 @@ export const EmployeeList = () => {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = currentPage * pageSize;
   const currentEmployees = employees.slice(startIndex, endIndex);
-    
-    const editEmployee = (e) => { 
-        navigate("/admin/dashboard/editemployee", { state: { id: e.target.id } });
-    }
 
-    const deleteEmployee = (e) => { 
-        console.log("Delete Employee", e.target.id);
-        fetch(`${serverUrl}/employee/${e.target.id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-            },
-        }).then((response) => response.json())
-            .then((data) => {
-                alert(data.message);
-                fetchEmployees();
-        })
-    }
+  const editEmployee = (e) => {
+    navigate("/admin/dashboard/editemployee", { state: { id: e.target.id } });
+  };
+
+  const deleteEmployee = (e) => {
+    console.log("Delete Employee", e.target.id);
+    fetch(`${serverUrl}/employee/${e.target.id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message);
+        fetchEmployees();
+      });
+  };
 
   return (
     <div>
@@ -91,10 +92,18 @@ export const EmployeeList = () => {
               <td className="border p-2">{employee.course}</td>
               <td className="border p-2">{employee.createdAt}</td>
               <td className="border p-2">
-                <button id={employee._id} className="bg-blue-500 text-white px-4 py-2 rounded mr-2" onClick={editEmployee}>
+                <button
+                  id={employee._id}
+                  className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                  onClick={editEmployee}
+                >
                   Edit
                 </button>
-                <button id={employee._id} className="bg-red-500 text-white px-4 py-2 rounded" onClick={deleteEmployee}>
+                <button
+                  id={employee._id}
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  onClick={deleteEmployee}
+                >
                   Delete
                 </button>
               </td>

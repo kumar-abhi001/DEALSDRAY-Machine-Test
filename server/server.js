@@ -10,7 +10,6 @@ import { verifyJWT } from "./src/middleware/auth.middleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import jwt from "jsonwebtoken";
-import bodyParser from "body-parser";
 
 dotenv.config({ path: ".env" });
 
@@ -58,7 +57,8 @@ app.use(verifyJWT);
 //add employee
 app.post("/add/employee", upload.single("image"),  async (req, res) => {
   const { name, email, phone, designation, gender, course } = req.body;
-  console.log(req.body);
+  
+  
 
   if (!name || !email || !phone || !designation || !gender || !course) { 
     return res.status(400).json({ message: "Please fill all the fields", success: false, data: {} });
@@ -82,7 +82,6 @@ app.post("/add/employee", upload.single("image"),  async (req, res) => {
   if (!localFilePath) {
     return res.send({ message: "Please upload file", data: {} } );
   }
-  console.log(req.file?.mimetype);
 
   //check file type
   if (req.file.mimetype != "image/jpeg" && req.file.mimetype != "image/png") {
@@ -101,7 +100,7 @@ app.post("/add/employee", upload.single("image"),  async (req, res) => {
 })
   
 app.get("/employees", verifyJWT,  async (req, res) => { 
-  const employees = await Employees.find();
+  const employees = await Employees.find().sort({name: 1});
   res.status(200).json({ message: "All employees", data: employees });
 });
 
@@ -113,20 +112,20 @@ app.get("/employee/:id", verifyJWT, async (req, res) => {
   res.status(200).json({ message: "Employee found", data: employee });
 });
 
-app.patch("/employee/:id", upload.single("image"), async (req, res) => {
-  const { id, name, email, phone, designation, gender, course } = req.body;
-
+app.patch("/employee/edit/:id", upload.single("image"), async (req, res) => {
+  const id = req.params.id;
   const employee = await Employees.findById(id);
 
   if (!employee) {
     return res.status(404).json({ message: "Employee not found", data: {} });
   }
 
+  const { name, email, phone, designation, gender, course } = req.body;
   const localFilePath = req.file?.path;
   const picture = await uploadOnCloudinary(localFilePath);
 
   const updatedEmployee = await Employees.findByIdAndUpdate({ _id: id },
-    { name, email, phone, designation, gender, course })
+    { name, email, phone, designation, gender, course, picture })
   
   if (!updatedEmployee) { 
     return res.status(400).json({ status: 400, message: "Error in updating employee", data: {} });
@@ -141,6 +140,8 @@ app.patch("/employee/:id", upload.single("image"), async (req, res) => {
   res.status(200).json({ status: 200, message: "Employee updated successfully", data: updatedEmployee });
 });
 
+
+//delete employee
 app.delete("/employee/:id", async (req, res) => {
   const employee = await Employees.findByIdAndDelete(req.params.id);
   if (!employee) {

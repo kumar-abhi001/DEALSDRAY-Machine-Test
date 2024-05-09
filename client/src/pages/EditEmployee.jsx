@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Input } from "./Input";
+import { Input } from "../components/Input";
 import { serverUrl } from "../../constants";
 import { useLocation } from "react-router-dom";
 
-export const AddEmployee = () => {
+export const EditEmployee = () => {
   const location = useLocation();
   const empId = location.state?.id;
   console.log("Locatin", location.state?.id);
@@ -51,10 +51,9 @@ export const AddEmployee = () => {
       formData.append("course", course);
     });
 
-    console.log(formData.get("course"));
     const token = window.localStorage.getItem("token");
-    fetch(`${serverUrl}/add/employee`, {
-      method: "POST",
+    fetch(`${serverUrl}/employee/edit/${empId}`, {
+      method: "PATCH",
       body: formData, // Pass formData directly as the body
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -64,7 +63,6 @@ export const AddEmployee = () => {
           window.localStorage.removeItem("token");
           console.log(data.message);
           window.location.href = "/";
-
         }
         alert(data.message);
       })

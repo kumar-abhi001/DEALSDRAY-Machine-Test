@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 export function verifyJWT(req, res, next) {
   try {
      const token = req.header?.("Authorization")?.replace("Bearer ", "");
-      console.log("Token", token);
     if (!token) {
         return res.status(403).json({ status: 403, message: "Token not found", data: {} });
       }
